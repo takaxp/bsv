@@ -1,0 +1,3 @@
+#+CAPTION: a demo
+[[https://github.com/takaxp/contents/blob/master/bsv/sample.gif]]
+
