@@ -62,6 +62,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'bs))
+
 (defcustom bsv-lighter "Bsv"
   "Package name in mode line."
   :type 'string
