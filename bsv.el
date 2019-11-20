@@ -83,17 +83,34 @@ If specifying more than 10, corrected to 9 automatically."
   :type 'integer
   :group 'bsv)
 
+(defcustom bsv-switch-by-key 'number
+  "Select a buffer by pressing a key in a range from \"1\" to \"10\".
+
+To disable this functionality:
+  (with-eval-after-load \"bs\"
+    (setq bsv-switch-by-key nil))
+OR
+  (custom-set-variables
+   '(bsv-switch-by-key nil))"
+  :type '(choice (const :tag "1,2,...,9" :value number)
+                 (const :tag "f1, f2,...,f9" :value function)
+                 (const :tag "Disable" :value nil))
+  :group 'bsv)
+
 (defvar bsv-mode-map
   (let ((map (make-sparse-keymap)))
-    (let ((key 1))
-      (while (< key 10)
-        (define-key map (kbd (number-to-string key))
-          `(lambda () (interactive)
-             (let ((buffer (nth (1- ,key) bsv-cycle-list)))
-               (when buffer
-                 (switch-to-buffer buffer))
-               (message "%s" buffer))))
-        (setq key (1+ key))))
+    (when (memq bsv-switch-by-key '(number function))
+      (let ((key 1))
+        (while (< key 10)
+          (define-key map (kbd (if (eq bsv-switch-by-key 'number)
+                                   (number-to-string key)
+                                 (concat "<f" (number-to-string key) ">")))
+            `(lambda () (interactive)
+               (let ((buffer (nth (1- ,key) bsv-cycle-list)))
+                 (when buffer
+                   (switch-to-buffer buffer))
+                 (message "%s" buffer))))
+          (setq key (1+ key)))))
     map)
   "The keymap for `bsv' to switch to a buffer.
 Assign key in a range from \"1\" to \"9\".")
