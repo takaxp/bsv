@@ -1,10 +1,10 @@
-;;; bsv.el --- Extended bs.el for displaying buffers vertically -*- lexical-binding: t; -*-
+;;; bsv.el --- Extended bs.el to show the buffer names vertically -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019 Takaaki ISHIKAWA
+;; Copyright (C) 2019-2020 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
-;; Keywords: frames, faces, convenience
-;; Version: 0.9.0
+;; Keywords: convenience
+;; Version: 0.9.2
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/bsv
 ;; Package-Requires: ((emacs "25.1"))
