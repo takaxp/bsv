@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: convenience
-;; Version: 0.9.3
+;; Version: 0.9.4
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/bsv
 ;; Package-Requires: ((emacs "25.1"))
@@ -123,9 +123,9 @@ OR
   "The keymap for `bsv' to switch to a buffer.
 Assign key in a range from \"1\" to \"9\".")
 
-(defvar bsv--timer nil)
 (defvar bsv-cycle-list nil)
 (defvar bsv-separater nil)
+(defvar bsv--timer nil)
 (defvar bsv--disable-features '(flyspell mic-paren))
 (defvar bsv--count-down nil)
 (defvar bsv--remaining 0)
@@ -279,9 +279,11 @@ All arguments ARGS are transferred to function `message'."
     (cancel-timer bsv--timer))
   (setq bsv--timer (run-with-idle-timer 0 nil #'bsv--deactivate))
   (bsv--cancel-timers)
-  (setq bsv--remaining bsv-message-timeout)
   (setq bsv--timer (run-with-idle-timer 0 nil #'bsv--deactivate))
-  (setq bsv--count-down (run-with-timer 0.5 1 #'bsv--count-down)))
+  (when (and bsv-message-timeout
+             (> bsv-message-timeout 0))
+    (setq bsv--remaining bsv-message-timeout)
+    (setq bsv--count-down (run-with-timer 0.5 1 #'bsv--count-down))))
 
 (defun bsv--abort ()
   "Abort."
