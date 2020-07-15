@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: convenience
-;; Version: 0.9.2
+;; Version: 0.9.3
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/bsv
 ;; Package-Requires: ((emacs "25.1"))
@@ -100,6 +100,11 @@ OR
                  (const :tag "Disable" :value nil))
   :group 'bsv)
 
+(defcustom bsv-show-countdown t
+  "If Non-nil, remaining time to deactivate the minor mode is shown in mode-line."
+  :type 'boolean
+  :group 'bsv)
+
 (defvar bsv-mode-map
   (let ((map (make-sparse-keymap)))
     (when (memq bsv-switch-by-key '(number function))
@@ -122,11 +127,16 @@ Assign key in a range from \"1\" to \"9\".")
 (defvar bsv-cycle-list nil)
 (defvar bsv-separater nil)
 (defvar bsv--disable-features '(flyspell mic-paren))
+(defvar bsv--count-down nil)
+(defvar bsv--remaining 0)
 
 (defun bsv--lighter ()
   "Lighter."
   (when bsv-lighter
-    (concat " " bsv-lighter)))
+    (concat " " bsv-lighter
+            (when (and bsv-show-countdown
+                       (>= bsv--remaining 0))
+              (format ":%d" bsv--remaining)))))
 
 (defun bsv--cycle-list (&optional reverse)
   "Create cycle list to show vertically in echo area.
@@ -245,6 +255,20 @@ All arguments ARGS are transferred to function `message'."
   (unless (memq this-command '(bs-cycle-next bs-cycle-previous))
     (bsv-mode -1)))
 
+(defun bsv--cancel-timers ()
+  "Cancel existing timers."
+  (when bsv--timer
+    (cancel-timer bsv--timer)
+    (setq bsv--timer nil))
+  (when bsv--count-down
+    (cancel-timer bsv--count-down)
+    (setq bsv--count-down nil
+          bsv--remaining 0)))
+
+(defun bsv--count-down ()
+  "Decrement `bsv--remaining'."
+  (setq bsv--remaining (1- bsv--remaining)))
+
 (defun bsv--setup ()
   "Setup."
   (when (memq 'mic-paren bsv--disable-features)
@@ -253,14 +277,19 @@ All arguments ARGS are transferred to function `message'."
     (flyspell-mode -1))
   (when bsv--timer
     (cancel-timer bsv--timer))
-  (setq bsv--timer (run-with-idle-timer 0 nil #'bsv--deactivate)))
+  (setq bsv--timer (run-with-idle-timer 0 nil #'bsv--deactivate))
+  (bsv--cancel-timers)
+  (setq bsv--remaining bsv-message-timeout)
+  (setq bsv--timer (run-with-idle-timer 0 nil #'bsv--deactivate))
+  (setq bsv--count-down (run-with-timer 0.5 1 #'bsv--count-down)))
 
 (defun bsv--abort ()
   "Abort."
   (when (memq 'mic-paren bsv--disable-features)
     (paren-activate))
   (when (memq 'flyspell bsv--disable-features)
-    (flyspell-mode 1)))
+    (flyspell-mode 1))
+  (bsv--cancel-timers))
 
 (defun bsv-disable-advices ()
   "Remove all advice functions."
