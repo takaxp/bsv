@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: convenience
-;; Version: 0.9.4
+;; Version: 0.9.5
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/bsv
 ;; Package-Requires: ((emacs "25.1"))
@@ -135,7 +135,8 @@ Assign key in a range from \"1\" to \"9\".")
   (when bsv-lighter
     (concat " " bsv-lighter
             (when (and bsv-show-countdown
-                       (>= bsv--remaining 0))
+                       (>= bsv--remaining 0)
+                       (eq (current-buffer) (car (buffer-list))))
               (format ":%d" bsv--remaining)))))
 
 (defun bsv--cycle-list (&optional reverse)
