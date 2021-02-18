@@ -1,10 +1,10 @@
 ;;; bsv.el --- Extended bs.el to show the buffer names vertically -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019-2020 Takaaki ISHIKAWA
+;; Copyright (C) 2019-2021 Takaaki ISHIKAWA
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: convenience
-;; Version: 0.9.5
+;; Version: 0.9.6
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/bsv
 ;; Package-Requires: ((emacs "25.1"))
@@ -34,10 +34,9 @@
 ;;  - Get bsv.el from GitHub.
 ;;
 ;; Setup:
-;;  - (with-eval-after-load "bs"
+;;    (when (require 'bsv nil t)
 ;;      (global-set-key (kbd "M-]") 'bs-cycle-next)
-;;      (global-set-key (kbd "M-[") 'bs-cycle-previous)
-;;      (require 'bsv))
+;;      (global-set-key (kbd "M-[") 'bs-cycle-previous))
 ;;
 ;; Keybindings:
 ;;  - The moom-mode-map is automatically configured.
@@ -126,7 +125,7 @@ Assign key in a range from \"1\" to \"9\".")
 (defvar bsv-cycle-list nil)
 (defvar bsv-separater nil)
 (defvar bsv--timer nil)
-(defvar bsv--disable-features '(flyspell mic-paren))
+(defvar bsv--disable-features nil)
 (defvar bsv--count-down nil)
 (defvar bsv--remaining 0)
 
@@ -272,6 +271,11 @@ All arguments ARGS are transferred to function `message'."
 
 (defun bsv--setup ()
   "Setup."
+  (when (fboundp 'paren-deactivate)
+    (add-to-list 'bsv--disable-features 'mic-paren))
+  (when (and flyspell-mode
+             (fboundp 'flyspell-mode))
+    (add-to-list 'bsv--disable-features 'flyspell))
   (when (memq 'mic-paren bsv--disable-features)
     (paren-deactivate))
   (when (memq 'flyspell bsv--disable-features)
