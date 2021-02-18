@@ -4,7 +4,7 @@
 
 ;; Author: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; Keywords: convenience
-;; Version: 0.9.6
+;; Version: 0.9.7
 ;; Maintainer: Takaaki ISHIKAWA <takaxp at ieee dot org>
 ;; URL: https://github.com/takaxp/bsv
 ;; Package-Requires: ((emacs "25.1"))
@@ -267,6 +267,7 @@ All arguments ARGS are transferred to function `message'."
 
 (defun bsv--count-down ()
   "Decrement `bsv--remaining'."
+  (force-mode-line-update)
   (setq bsv--remaining (1- bsv--remaining)))
 
 (defun bsv--setup ()
